@@ -1,0 +1,10 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.intrepid.auth"
+    >
+
+    <application>
+        <activity android:name=".temp.OauthActivity"/>
+    </application>
+
+</manifest>

@@ -1,6 +1,6 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.intrepid.android_auth_client"
+    package="io.intrepid.androidlogin"
     >
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         >
 
-        <activity android:name=".example.ExampleLoginActivity">
+        <activity android:name="io.intrepid.androidlogin.example.ExampleLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

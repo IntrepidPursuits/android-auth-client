@@ -13,7 +13,7 @@ import timber.log.Timber;
 class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlowCallbacks<User>, ValidationCallbacks {
 
     private ExampleLoginContract.View view;
-    private BasicLoginFlowManager<User, ExampleLoginContract.View> loginFlowManager;
+    private final BasicLoginFlowManager<User, ExampleLoginContract.View> loginFlowManager;
 
     ExampleLoginPresenter(ExampleLoginContract.View view) {
         this.view = view;
@@ -41,14 +41,14 @@ class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlow
     @Override
     public void onValidationSuccess(String input) {
         if (input.equals(loginFlowManager.getUsername())) {
-            view.showToast("email ok");
+            Timber.i("email ok");
         } else if (input.equals(loginFlowManager.getPassword())) {
-            view.showToast("password ok");
+            Timber.i("password ok");
         }
     }
 
     @Override
     public void onValidationFailure(String input) {
-
+        Timber.i("invalid input: %s", input);
     }
 }

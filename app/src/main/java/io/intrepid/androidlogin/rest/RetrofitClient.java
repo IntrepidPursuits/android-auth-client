@@ -1,7 +1,5 @@
 package io.intrepid.androidlogin.rest;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -36,21 +34,16 @@ public class RetrofitClient {
 
     public static RestApi getApi() {
         if (instance == null) {
-            instance = createRestApi(BASE_URL);
+            instance = createRestApi();
         }
         return instance;
-    }
-
-    @VisibleForTesting
-    static RestApi getTestApi(String baseUrl) {
-        return createRestApi(baseUrl);
     }
 
     private RetrofitClient() {
 
     }
 
-    private static RestApi createRestApi(String baseUrl) {
+    private static RestApi createRestApi() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         builder.addInterceptor(new HttpLoggingInterceptor(message -> Timber.v(message)).setLevel(
@@ -67,7 +60,7 @@ public class RetrofitClient {
                 .build();
 
         return new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(BASE_URL)
                 .client(httpClient)
                 .addConverterFactory(JacksonConverterFactory.create(OBJECT_MAPPER))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

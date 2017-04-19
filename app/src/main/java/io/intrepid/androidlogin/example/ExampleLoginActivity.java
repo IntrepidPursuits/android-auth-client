@@ -14,7 +14,6 @@ import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.intrepid.androidlogin.R;
 import io.reactivex.Observable;
 
@@ -27,6 +26,7 @@ public class ExampleLoginActivity extends AppCompatActivity implements ExampleLo
     @BindView(R.id.login_button)
     Button loginButton;
 
+    @SuppressWarnings("unused")
     private ExampleLoginContract.Presenter presenter;
 
     @Override

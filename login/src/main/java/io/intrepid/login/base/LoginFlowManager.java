@@ -1,7 +1,6 @@
 package io.intrepid.login.base;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;

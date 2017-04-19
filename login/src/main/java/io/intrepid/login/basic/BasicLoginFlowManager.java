@@ -19,9 +19,9 @@ public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends Lo
     private String username;
     private String password;
     @Nullable
-    private ValidationRule usernameValidationRule;
+    private final ValidationRule usernameValidationRule;
     @Nullable
-    private ValidationRule passwordValidationRule;
+    private final ValidationRule passwordValidationRule;
 
     private BasicLoginFlowManager(Builder<T, V> builder) {
         super(builder);

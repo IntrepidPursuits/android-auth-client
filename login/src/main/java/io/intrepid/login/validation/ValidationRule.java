@@ -1,14 +1,14 @@
 package io.intrepid.login.validation;
 
-public abstract class ValidationRule {
+public abstract class ValidationRule<V extends ValidationCallbacks> {
 
-    protected ValidationCallbacks validationCallbacks;
+    protected V validationCallbacks;
 
     protected ValidationRule() {
 
     }
 
-    protected ValidationRule(ValidationCallbacks validationCallbacks) {
+    protected ValidationRule(V validationCallbacks) {
         this.validationCallbacks = validationCallbacks;
     }
 

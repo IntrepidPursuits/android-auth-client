@@ -1,6 +1,6 @@
 package io.intrepid.login.validation;
 
-public class NonEmptyValidationRule extends ValidationRule {
+public class NonEmptyValidationRule extends ValidationRule<ValidationCallbacks> {
 
     public NonEmptyValidationRule() {
     }

@@ -11,27 +11,34 @@ import org.mockito.Mock;
 import io.intrepid.login.testutils.BaseFlowManagerTest;
 import io.intrepid.login.testutils.MockResponseObject;
 import io.intrepid.login.validation.NonEmptyValidationRule;
+import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlowManager<MockResponseObject>> {
+public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlowManager> {
 
+    @Mock
+    BasicLoginView mockLoginView;
     @Mock
     EditText mockUsernameView;
     @Mock
     EditText mockPasswordView;
 
-    private PublishSubject<TextViewTextChangeEvent> mockUsernameTextFieldObservable = PublishSubject.create();
-    private PublishSubject<TextViewTextChangeEvent> mockPasswordTextFieldObservable = PublishSubject.create();
+    private final PublishSubject<TextViewTextChangeEvent> mockUsernameTextFieldObservable = PublishSubject.create();
+    private final PublishSubject<TextViewTextChangeEvent> mockPasswordTextFieldObservable = PublishSubject.create();
+    private final PublishSubject<Object> mockLoginButtonObservable = PublishSubject.create();
+    private final MockResponseObject mockResponse = new MockResponseObject();
 
     @Test
     public void setupTextWatching_noValidation() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -51,7 +58,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
 
     @Test
     public void setupTextWatching_withValidation() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -87,7 +94,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
 
     @Test
     public void setupTextWatching_noTextObservables() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -98,6 +105,46 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
         verify(mockLoginView).enableLoginButton();
         assertNull(loginFlowManager.getUsername());
         assertNull(loginFlowManager.getPassword());
+    }
+
+    @Test
+    public void loginButtonWatching() {
+        loginObservableSetup();
+        when(mockLoginService.getLoginObservable()).thenReturn(Observable.just(mockResponse));
+
+        mockLoginButtonObservable.onNext(new Object());
+        testScheduler.triggerActions();
+
+        verify(mockLoginService).getLoginObservable();
+        verify(mockLoginFlowCallbacks).onLoginSuccess(mockResponse);
+        verify(mockLoginFlowCallbacks, never()).onLoginError(any());
+    }
+
+    @Test
+    public void loginButtonWatching_loginFailure() {
+        loginObservableSetup();
+        Throwable error = new Throwable();
+        when(mockLoginService.getLoginObservable()).thenReturn(Observable.error(error));
+
+        mockLoginButtonObservable.onNext(new Object());
+        testScheduler.triggerActions();
+
+        verify(mockLoginService).getLoginObservable();
+        verify(mockLoginFlowCallbacks, never()).onLoginSuccess(any());
+        verify(mockLoginFlowCallbacks).onLoginError(error);
+    }
+
+    private void loginObservableSetup() {
+        BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView> builder = new BasicLoginFlowManager.Builder<>();
+        builder.setLoginButtonObservable(mockLoginButtonObservable)
+                .setLoginFlowCallbacks(mockLoginFlowCallbacks)
+                .setLoginView(mockLoginView)
+                .setLoginService(mockLoginService)
+                .build();
+
+        verify(mockLoginService, never()).getLoginObservable();
+        verify(mockLoginFlowCallbacks, never()).onLoginSuccess(any());
+        verify(mockLoginFlowCallbacks, never()).onLoginError(any());
     }
 
     private void publishTextChangeEvent(PublishSubject<TextViewTextChangeEvent> mock, TextView textField, String text) {

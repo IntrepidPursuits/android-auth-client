@@ -58,6 +58,17 @@ dependencies {
     def mockitoVersion = "2.6.1"
     def mockitoLib = "org.mockito:mockito-core:$mockitoVersion"
 
+    // Jake Wharton/Square
+    def retrofitVersion = "2.2.0";
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:converter-jackson:$retrofitVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
+
+    def okhttpVersion = "3.4.1"
+    compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+
     // Unit tests
     testCompile junitLib
     testCompile mockitoLib

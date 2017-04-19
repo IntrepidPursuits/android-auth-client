@@ -1,27 +1,25 @@
 package io.intrepid.login.base;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.disposables.Disposable;
 
-public abstract class LoginFlowManager<T> {
-
-    protected final CompositeDisposable disposables = new CompositeDisposable();
-    protected final Scheduler ioScheduler = Schedulers.io();
-    protected final Scheduler uiScheduler = AndroidSchedulers.mainThread();
+public abstract class LoginFlowManager<T, V extends LoginView> {
 
     @NonNull
     protected LoginService<T> loginService;
     @NonNull
-    protected LoginView loginView;
+    protected V loginView;
     protected LoginFlowCallbacks<T> loginFlowCallbacks;
     protected boolean loggingIn = false;
+    protected Disposable loginButtonDisposable;
+    protected final Scheduler uiScheduler = AndroidSchedulers.mainThread();
 
-    protected LoginFlowManager(Builder<T, ? extends Builder> builder) {
+    protected LoginFlowManager(Builder<T,V, ? extends Builder> builder) {
         this.loginService = builder.loginService;
         this.loginView = builder.loginView;
         this.loginFlowCallbacks = builder.loginFlowCallbacks;
@@ -31,28 +29,11 @@ public abstract class LoginFlowManager<T> {
         }
     }
 
-    private void setupLoginButtonWatching(Observable<Object> loginButtonObservable) {
-        loginButtonObservable
-                .observeOn(uiScheduler)
-                .filter(e -> !loggingIn)
-                .doOnNext(v -> loggingIn = true)
-                .observeOn(uiScheduler)
-                .flatMap(click -> loginService.getLoginObservable())
-                .subscribe(
-                        response -> {
-                            loggingIn = false;
-                            loginFlowCallbacks.onLoginSuccess(response);
-                        },
-                        throwable -> {
-                            loggingIn = false;
-                            loginFlowCallbacks.onLoginError(throwable);
-                        }
-                );
-    }
+    protected abstract void setupLoginButtonWatching(Observable<Object> loginButtonObservable);
 
-    public abstract static class Builder<T, B extends Builder<T, B>> {
+    public abstract static class Builder<T, V extends LoginView, B extends Builder<T, V, B>> {
 
-        LoginView loginView;
+        V loginView;
         LoginService<T> loginService;
         LoginFlowCallbacks<T> loginFlowCallbacks;
         Observable<Object> loginButtonObservable;
@@ -64,7 +45,7 @@ public abstract class LoginFlowManager<T> {
             return getBuilder();
         }
 
-        public B setLoginView(LoginView loginView) {
+        public B setLoginView(V loginView) {
             this.loginView = loginView;
             return getBuilder();
         }

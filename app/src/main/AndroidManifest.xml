@@ -4,6 +4,7 @@
     >
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="false"
@@ -12,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:name=".AndroidLoginApplication"
         >
 
         <activity android:name="io.intrepid.androidlogin.example.ExampleLoginActivity">

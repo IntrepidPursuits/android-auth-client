@@ -1,21 +1,23 @@
 package io.intrepid.androidlogin.example;
 
+import io.intrepid.androidlogin.model.User;
 import io.intrepid.androidlogin.service.ExampleLoginService;
 import io.intrepid.androidlogin.validation.EmailValidationRule;
 import io.intrepid.login.base.LoginFlowCallbacks;
 import io.intrepid.login.basic.BasicLoginFlowManager;
 import io.intrepid.login.validation.NonEmptyValidationRule;
 import io.intrepid.login.validation.ValidationCallbacks;
+import timber.log.Timber;
 
 
-class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlowCallbacks<String>, ValidationCallbacks {
+class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlowCallbacks<User>, ValidationCallbacks {
 
     private ExampleLoginContract.View view;
-    private BasicLoginFlowManager<String> loginFlowManager;
+    private BasicLoginFlowManager<User, ExampleLoginContract.View> loginFlowManager;
 
     ExampleLoginPresenter(ExampleLoginContract.View view) {
         this.view = view;
-        loginFlowManager = new BasicLoginFlowManager.Builder<String>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<User, ExampleLoginContract.View>()
                 .setLoginView(view)
                 .setUsernameObservable(view.getUsernameTextFieldObservable(), new EmailValidationRule(this))
                 .setPasswordObservable(view.getPasswordTextFieldObservable(), new NonEmptyValidationRule(this))
@@ -26,16 +28,13 @@ class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlow
     }
 
     @Override
-    public void onLoginSuccess(String response) {
-        if (response != null) {
-            view.showToast(response);
-        } else {
-            view.showToast("click");
-        }
+    public void onLoginSuccess(User response) {
+        view.showToast(response.name);
     }
 
     @Override
     public void onLoginError(Throwable throwable) {
+        Timber.v(throwable);
         view.showToast("something went wrong");
     }
 

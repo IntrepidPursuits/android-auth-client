@@ -14,6 +14,7 @@ import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.intrepid.androidlogin.R;
 import io.reactivex.Observable;
 
@@ -34,7 +35,6 @@ public class ExampleLoginActivity extends AppCompatActivity implements ExampleLo
         setContentView(R.layout.activity_example);
         ButterKnife.bind(this);
         presenter = new ExampleLoginPresenter(this);
-        loginButton.setEnabled(false);
     }
 
     @NonNull

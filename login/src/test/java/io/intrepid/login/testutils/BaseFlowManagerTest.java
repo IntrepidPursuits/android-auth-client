@@ -9,14 +9,11 @@ import org.mockito.Mock;
 import io.intrepid.login.base.LoginFlowCallbacks;
 import io.intrepid.login.base.LoginFlowManager;
 import io.intrepid.login.base.LoginService;
-import io.intrepid.login.base.LoginView;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.schedulers.TestScheduler;
 
 public class BaseFlowManagerTest<F extends LoginFlowManager> extends BaseUnitTest {
 
-    @Mock
-    protected LoginView mockLoginView;
     @Mock
     protected LoginService<MockResponseObject> mockLoginService;
     @Mock

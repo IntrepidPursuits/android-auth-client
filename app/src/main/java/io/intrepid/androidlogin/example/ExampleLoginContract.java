@@ -3,11 +3,11 @@ package io.intrepid.androidlogin.example;
 import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 
 import io.intrepid.login.base.LoginView;
+import io.intrepid.login.basic.BasicLoginView;
 import io.reactivex.Observable;
 
-public interface ExampleLoginContract {
-
-    interface View extends LoginView {
+interface ExampleLoginContract {
+    interface View extends BasicLoginView {
 
         Observable<TextViewTextChangeEvent> getUsernameTextFieldObservable();
 

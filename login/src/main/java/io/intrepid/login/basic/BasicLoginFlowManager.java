@@ -9,7 +9,12 @@ import io.intrepid.login.base.LoginFlowManager;
 import io.intrepid.login.validation.ValidationRule;
 import io.reactivex.Observable;
 
-public final class BasicLoginFlowManager<T> extends LoginFlowManager<T> {
+/**
+ * Login Flow Manager class for a basic username/password login flow.
+ * @param <T> Type of response expected from the login observable
+ * @param <V> BasicLoginView that is associated with this login flow
+ */
+public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends LoginFlowManager<T, V> {
 
     private String username;
     private String password;
@@ -18,12 +23,39 @@ public final class BasicLoginFlowManager<T> extends LoginFlowManager<T> {
     @Nullable
     private ValidationRule passwordValidationRule;
 
-    private BasicLoginFlowManager(Builder<T> builder) {
+    private BasicLoginFlowManager(Builder<T, V> builder) {
         super(builder);
         this.usernameValidationRule = builder.usernameValidationRule;
         this.passwordValidationRule = builder.passwordValidationRule;
 
         setupTextWatching(builder.usernameFieldObservable, builder.passwordFieldObservable);
+    }
+
+    protected void setupLoginButtonWatching(Observable<Object> loginButtonObservable) {
+        loginButtonDisposable = loginButtonObservable
+                .observeOn(uiScheduler)
+                .filter(e -> !loggingIn)
+                .doOnNext(v -> loggingIn = true)
+                .observeOn(uiScheduler)
+                .flatMap(click -> loginService.getLoginObservable())
+                .subscribe(
+                        response -> {
+                            loggingIn = false;
+                            loginFlowCallbacks.onLoginSuccess(response);
+                            unsubscribeLoginButtonWatching();
+                        },
+                        throwable -> {
+                            loggingIn = false;
+                            loginFlowCallbacks.onLoginError(throwable);
+                            setupLoginButtonWatching(loginButtonObservable);
+                        }
+                );
+    }
+
+    private void unsubscribeLoginButtonWatching() {
+        if (loginButtonDisposable != null) {
+            loginButtonDisposable.dispose();
+        }
     }
 
     private void setupTextWatching(Observable<TextViewTextChangeEvent> usernameFieldObservable,
@@ -73,24 +105,24 @@ public final class BasicLoginFlowManager<T> extends LoginFlowManager<T> {
         return password;
     }
 
-    public static class Builder<T> extends LoginFlowManager.Builder<T, Builder<T>> {
+    public static class Builder<T, V extends BasicLoginView> extends LoginFlowManager.Builder<T,V, Builder<T,V>> {
         private ValidationRule usernameValidationRule;
         private ValidationRule passwordValidationRule;
         private Observable<TextViewTextChangeEvent> usernameFieldObservable;
         private Observable<TextViewTextChangeEvent> passwordFieldObservable;
 
-        public BasicLoginFlowManager<T> build() {
+        public BasicLoginFlowManager<T, V> build() {
             return new BasicLoginFlowManager<>(this);
         }
 
-        public Builder<T> setUsernameObservable(@NonNull Observable<TextViewTextChangeEvent> usernameFieldObservable,
+        public Builder<T, V> setUsernameObservable(@NonNull Observable<TextViewTextChangeEvent> usernameFieldObservable,
                                                 @Nullable ValidationRule usernameValidationRule) {
             this.usernameFieldObservable = usernameFieldObservable;
             this.usernameValidationRule = usernameValidationRule;
             return this;
         }
 
-        public Builder<T> setPasswordObservable(@NonNull Observable<TextViewTextChangeEvent> passwordFieldObservable,
+        public Builder<T, V> setPasswordObservable(@NonNull Observable<TextViewTextChangeEvent> passwordFieldObservable,
                                                 @Nullable ValidationRule passwordValidationRule) {
             this.passwordFieldObservable = passwordFieldObservable;
             this.passwordValidationRule = passwordValidationRule;
@@ -98,7 +130,7 @@ public final class BasicLoginFlowManager<T> extends LoginFlowManager<T> {
         }
 
         @Override
-        public Builder<T> getBuilder() {
+        public Builder<T, V> getBuilder() {
             return this;
         }
     }

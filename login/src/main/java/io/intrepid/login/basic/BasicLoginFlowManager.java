@@ -6,15 +6,15 @@ import android.support.annotation.Nullable;
 import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 
 import io.intrepid.login.base.LoginFlowManager;
+import io.intrepid.login.base.LoginService;
 import io.intrepid.login.validation.ValidationRule;
 import io.reactivex.Observable;
 
 /**
  * Login Flow Manager class for a basic username/password login flow.
  * @param <T> Type of response expected from the login observable
- * @param <V> BasicLoginView that is associated with this login flow
  */
-public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends LoginFlowManager<T, V> {
+public final class BasicLoginFlowManager<T> extends LoginFlowManager<T, LoginService<T>, BasicLoginView> {
 
     private String username;
     private String password;
@@ -23,7 +23,7 @@ public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends Lo
     @Nullable
     private final ValidationRule passwordValidationRule;
 
-    private BasicLoginFlowManager(Builder<T, V> builder) {
+    private BasicLoginFlowManager(Builder<T> builder) {
         super(builder);
         this.usernameValidationRule = builder.usernameValidationRule;
         this.passwordValidationRule = builder.passwordValidationRule;
@@ -105,24 +105,24 @@ public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends Lo
         return password;
     }
 
-    public static class Builder<T, V extends BasicLoginView> extends LoginFlowManager.Builder<T,V, Builder<T,V>> {
+    public static class Builder<T> extends LoginFlowManager.Builder<T,LoginService<T>, BasicLoginView, Builder<T>> {
         private ValidationRule usernameValidationRule;
         private ValidationRule passwordValidationRule;
         private Observable<TextViewTextChangeEvent> usernameFieldObservable;
         private Observable<TextViewTextChangeEvent> passwordFieldObservable;
 
-        public BasicLoginFlowManager<T, V> build() {
+        public BasicLoginFlowManager<T> build() {
             return new BasicLoginFlowManager<>(this);
         }
 
-        public Builder<T, V> setUsernameObservable(@NonNull Observable<TextViewTextChangeEvent> usernameFieldObservable,
+        public Builder<T> setUsernameObservable(@NonNull Observable<TextViewTextChangeEvent> usernameFieldObservable,
                                                 @Nullable ValidationRule usernameValidationRule) {
             this.usernameFieldObservable = usernameFieldObservable;
             this.usernameValidationRule = usernameValidationRule;
             return this;
         }
 
-        public Builder<T, V> setPasswordObservable(@NonNull Observable<TextViewTextChangeEvent> passwordFieldObservable,
+        public Builder<T> setPasswordObservable(@NonNull Observable<TextViewTextChangeEvent> passwordFieldObservable,
                                                 @Nullable ValidationRule passwordValidationRule) {
             this.passwordFieldObservable = passwordFieldObservable;
             this.passwordValidationRule = passwordValidationRule;
@@ -130,7 +130,7 @@ public final class BasicLoginFlowManager<T, V extends BasicLoginView> extends Lo
         }
 
         @Override
-        public Builder<T, V> getBuilder() {
+        public Builder<T> getBuilder() {
             return this;
         }
     }

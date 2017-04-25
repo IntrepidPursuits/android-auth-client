@@ -38,7 +38,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
 
     @Test
     public void setupTextWatching_noValidation() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -58,7 +58,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
 
     @Test
     public void setupTextWatching_withValidation() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -94,7 +94,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
 
     @Test
     public void setupTextWatching_noTextObservables() {
-        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<MockResponseObject>()
                 .setLoginService(mockLoginService)
                 .setLoginView(mockLoginView)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
@@ -135,7 +135,7 @@ public class BasicLoginFlowManagerTest extends BaseFlowManagerTest<BasicLoginFlo
     }
 
     private void loginObservableSetup() {
-        BasicLoginFlowManager.Builder<MockResponseObject, BasicLoginView> builder = new BasicLoginFlowManager.Builder<>();
+        BasicLoginFlowManager.Builder<MockResponseObject> builder = new BasicLoginFlowManager.Builder<>();
         builder.setLoginButtonObservable(mockLoginButtonObservable)
                 .setLoginFlowCallbacks(mockLoginFlowCallbacks)
                 .setLoginView(mockLoginView)

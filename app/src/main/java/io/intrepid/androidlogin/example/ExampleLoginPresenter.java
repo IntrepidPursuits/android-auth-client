@@ -13,11 +13,11 @@ import timber.log.Timber;
 class ExampleLoginPresenter implements ExampleLoginContract.Presenter, LoginFlowCallbacks<User>, ValidationCallbacks {
 
     private ExampleLoginContract.View view;
-    private final BasicLoginFlowManager<User, ExampleLoginContract.View> loginFlowManager;
+    private final BasicLoginFlowManager<User> loginFlowManager;
 
     ExampleLoginPresenter(ExampleLoginContract.View view) {
         this.view = view;
-        loginFlowManager = new BasicLoginFlowManager.Builder<User, ExampleLoginContract.View>()
+        loginFlowManager = new BasicLoginFlowManager.Builder<User>()
                 .setLoginView(view)
                 .setUsernameObservable(view.getUsernameTextFieldObservable(), new EmailValidationRule(this))
                 .setPasswordObservable(view.getPasswordTextFieldObservable(), new NonEmptyValidationRule(this))

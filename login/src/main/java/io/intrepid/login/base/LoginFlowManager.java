@@ -7,10 +7,10 @@ import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public abstract class LoginFlowManager<T, V extends LoginView> {
+public abstract class LoginFlowManager<T, S extends LoginService<T>, V extends LoginView> {
 
     @NonNull
-    protected LoginService<T> loginService;
+    protected S loginService;
     @NonNull
     protected V loginView;
     protected LoginFlowCallbacks<T> loginFlowCallbacks;
@@ -18,7 +18,7 @@ public abstract class LoginFlowManager<T, V extends LoginView> {
     protected Disposable loginButtonDisposable;
     protected final Scheduler uiScheduler = AndroidSchedulers.mainThread();
 
-    protected LoginFlowManager(Builder<T,V, ? extends Builder> builder) {
+    protected LoginFlowManager(Builder<T, S , V, ? extends Builder> builder) {
         this.loginService = builder.loginService;
         this.loginView = builder.loginView;
         this.loginFlowCallbacks = builder.loginFlowCallbacks;
@@ -30,16 +30,16 @@ public abstract class LoginFlowManager<T, V extends LoginView> {
 
     protected abstract void setupLoginButtonWatching(Observable<Object> loginButtonObservable);
 
-    public abstract static class Builder<T, V extends LoginView, B extends Builder<T, V, B>> {
+    public abstract static class Builder<T, S extends LoginService<T>, V extends LoginView, B extends Builder<T, S, V, B>> {
 
         V loginView;
-        LoginService<T> loginService;
+        S loginService;
         LoginFlowCallbacks<T> loginFlowCallbacks;
         Observable<Object> loginButtonObservable;
 
         public abstract B getBuilder();
 
-        public B setLoginService(LoginService<T> service) {
+        public B setLoginService(S service) {
             this.loginService = service;
             return getBuilder();
         }
